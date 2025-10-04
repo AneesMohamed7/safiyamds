@@ -15,7 +15,396 @@ document.querySelectorAll('.nav-link').forEach(link => {
     });
 });
 
-// Gallery tabs functionality
+
+// Simple animation trigger on scroll
+        document.addEventListener('DOMContentLoaded', function() {
+            const serviceCards = document.querySelectorAll('.service-card');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animationPlayState = 'running';
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            serviceCards.forEach(card => {
+                card.style.animationPlayState = 'paused';
+                observer.observe(card);
+            });
+        });
+
+// Continuous Marquee-Style Carousel Class
+// class ContinuousCarousel {
+//     constructor(carouselId) {
+//         this.carousel = document.querySelector(`#${carouselId} .carousel-wrapper`);
+//         this.container = this.carousel.querySelector('.carousel-container');
+//         this.slides = this.carousel.querySelectorAll('.carousel-slide');
+//         this.prevBtn = this.carousel.querySelector('.carousel-prev');
+//         this.nextBtn = this.carousel.querySelector('.carousel-next');
+//         this.dots = this.carousel.querySelectorAll('.dot');
+        
+//         this.currentSlide = 0;
+//         this.totalSlides = this.slides.length;
+//         this.isAnimating = false;
+//         this.autoplayInterval = null;
+//         this.autoplayDelay = null;
+//         this.animationDuration = 600;
+        
+//         // Clone slides for seamless looping
+//         this.setupSlideClones();
+//         this.init();
+//     }
+    
+//     setupSlideClones() {
+//         // Create clones of first and last slides for seamless looping
+//         const firstClone = this.slides[0].cloneNode(true);
+//         const lastClone = this.slides[this.totalSlides - 1].cloneNode(true);
+        
+//         firstClone.classList.add('clone');
+//         lastClone.classList.add('clone');
+        
+//         this.container.appendChild(firstClone);
+//         this.container.insertBefore(lastClone, this.slides[0]);
+        
+//         // Update slides reference to include clones
+//         this.slides = this.container.querySelectorAll('.carousel-slide');
+//         this.totalSlides = this.slides.length;
+//     }
+    
+//     init() {
+//         this.setupSlides();
+//         this.bindEvents();
+//         this.startAutoplay();
+//         this.updateDots();
+//     }
+    
+//     setupSlides() {
+//         // Set initial positions with clones
+//         this.slides.forEach((slide, index) => {
+//             slide.style.transform = `translateX(${index * 100}%)`;
+//             slide.style.transition = `transform ${this.animationDuration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
+//         });
+        
+//         // Start at the first real slide (position 1 because of the clone at beginning)
+//         this.currentSlide = 1;
+//         this.container.style.transform = `translateX(-${this.currentSlide * 100}%)`;
+//     }
+    
+//     bindEvents() {
+//         this.prevBtn.addEventListener('click', () => this.prevSlide());
+//         this.nextBtn.addEventListener('click', () => this.nextSlide());
+        
+//         // Dot navigation
+//         this.dots.forEach((dot, index) => {
+//             dot.addEventListener('click', () => this.goToSlide(index));
+//         });
+        
+//         // Touch/Swipe support
+//         this.addTouchSupport();
+        
+//         // Pause autoplay on hover
+//         this.carousel.addEventListener('mouseenter', () => this.pauseAutoplay());
+//         this.carousel.addEventListener('mouseleave', () => this.startAutoplay());
+        
+//         // Keyboard navigation
+//         document.addEventListener('keydown', (e) => {
+//             if (this.carousel.closest('.gallery-slider.active')) {
+//                 if (e.key === 'ArrowLeft') this.prevSlide();
+//                 if (e.key === 'ArrowRight') this.nextSlide();
+//             }
+//         });
+//     }
+    
+//     addTouchSupport() {
+//         let startX = 0;
+//         let endX = 0;
+//         let startY = 0;
+//         let endY = 0;
+        
+//         this.container.addEventListener('touchstart', (e) => {
+//             startX = e.touches[0].clientX;
+//             startY = e.touches[0].clientY;
+//         }, { passive: true });
+        
+//         this.container.addEventListener('touchend', (e) => {
+//             endX = e.changedTouches[0].clientX;
+//             endY = e.changedTouches[0].clientY;
+            
+//             const deltaX = startX - endX;
+//             const deltaY = startY - endY;
+            
+//             // Only trigger if horizontal swipe is more significant than vertical
+//             if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+//                 if (deltaX > 0) {
+//                     this.nextSlide();
+//                 } else {
+//                     this.prevSlide();
+//                 }
+//             }
+//         }, { passive: true });
+//     }
+    
+//     goToSlide(slideIndex, direction = 'next') {
+//         if (this.isAnimating) return;
+        
+//         this.isAnimating = true;
+//         const realSlideIndex = slideIndex;
+        
+//         // Adjust for clone slides - real slides start at index 1
+//         slideIndex = slideIndex + 1;
+        
+//         this.currentSlide = slideIndex;
+        
+//         // Smooth transition
+//         this.container.style.transition = `transform ${this.animationDuration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
+//         this.container.style.transform = `translateX(-${this.currentSlide * 100}%)`;
+        
+//         this.updateDots(realSlideIndex);
+//         this.updateButtons();
+        
+//         // Handle seamless looping after animation completes
+//         setTimeout(() => {
+//             this.isAnimating = false;
+            
+//             // If we're at the first clone (last slide), jump to the real last slide
+//             if (this.currentSlide === this.totalSlides - 1) {
+//                 this.container.style.transition = 'none';
+//                 this.currentSlide = 1;
+//                 this.container.style.transform = `translateX(-${this.currentSlide * 100}%)`;
+//             }
+//             // If we're at the last clone (first slide), jump to the real first slide
+//             else if (this.currentSlide === 0) {
+//                 this.container.style.transition = 'none';
+//                 this.currentSlide = this.totalSlides - 2;
+//                 this.container.style.transform = `translateX(-${this.currentSlide * 100}%)`;
+//             }
+//         }, this.animationDuration);
+//     }
+    
+//     nextSlide() {
+//         const nextIndex = (this.currentSlide + 1) % this.totalSlides;
+//         const realIndex = (this.getRealSlideIndex(this.currentSlide) + 1) % (this.totalSlides - 2);
+//         this.goToSlide(realIndex, 'next');
+//     }
+    
+//     prevSlide() {
+//         const prevIndex = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides;
+//         const realIndex = (this.getRealSlideIndex(this.currentSlide) - 1 + (this.totalSlides - 2)) % (this.totalSlides - 2);
+//         this.goToSlide(realIndex, 'prev');
+//     }
+    
+//     getRealSlideIndex(slideIndex) {
+//         // Convert container index to real slide index
+//         if (slideIndex === 0) return this.totalSlides - 3; // First clone is last real slide
+//         if (slideIndex === this.totalSlides - 1) return 0; // Last clone is first real slide
+//         return slideIndex - 1;
+//     }
+    
+//     updateDots(realIndex = null) {
+//         if (realIndex === null) {
+//             realIndex = this.getRealSlideIndex(this.currentSlide);
+//         }
+//         this.dots.forEach((dot, index) => {
+//             dot.classList.toggle('active', index === realIndex);
+//         });
+//     }
+    
+//     updateButtons() {
+//         // Add visual feedback for button clicks
+//         const activeBtn = event && event.target.closest('.carousel-btn');
+//         if (activeBtn) {
+//             activeBtn.style.transform = 'scale(0.95)';
+//             setTimeout(() => {
+//                 activeBtn.style.transform = '';
+//             }, 150);
+//         }
+//     }
+    
+//     startAutoplay() {
+//         this.pauseAutoplay(); // Clear any existing interval
+//         this.autoplayInterval = setInterval(() => {
+//             this.nextSlide();
+//         }, this.autoplayDelay);
+//     }
+    
+//     pauseAutoplay() {
+//         if (this.autoplayInterval) {
+//             clearInterval(this.autoplayInterval);
+//             this.autoplayInterval = null;
+//         }
+//     }
+    
+//     destroy() {
+//         this.pauseAutoplay();
+//         // Remove event listeners if needed
+//     }
+// }
+
+// Alternative Infinite Scroll Carousel (Simpler approach)
+class InfiniteScrollCarousel {
+    constructor(carouselId) {
+        this.carousel = document.querySelector(`#${carouselId} .carousel-wrapper`);
+        this.container = this.carousel.querySelector('.carousel-container');
+        this.slides = Array.from(this.carousel.querySelectorAll('.carousel-slide'));
+        this.prevBtn = this.carousel.querySelector('.carousel-prev');
+        this.nextBtn = this.carousel.querySelector('.carousel-next');
+        this.dots = this.carousel.querySelectorAll('.dot');
+        
+        this.currentIndex = 0;
+        this.totalSlides = this.slides.length;
+        this.isAnimating = false;
+        this.autoplayInterval = null;
+        this.autoplayDelay = 4000;
+        
+        // Duplicate slides for infinite effect
+        this.setupInfiniteSlides();
+        this.init();
+    }
+    
+    setupInfiniteSlides() {
+        // Clone all slides and append for infinite scroll
+        const slideClones = this.slides.map(slide => slide.cloneNode(true));
+        slideClones.forEach(clone => {
+            clone.classList.add('clone');
+            this.container.appendChild(clone);
+        });
+        
+        this.allSlides = this.container.querySelectorAll('.carousel-slide');
+    }
+    
+    init() {
+        this.setupSlides();
+        this.bindEvents();
+        this.startAutoplay();
+        this.updateDots();
+    }
+    
+    setupSlides() {
+        // Set initial width and position
+        const slideWidth = 100 / this.totalSlides; // Percentage per slide
+        this.allSlides.forEach(slide => {
+            slide.style.flex = `0 0 ${slideWidth}%`;
+        });
+        
+        this.container.style.transition = 'transform 0.6s ease';
+    }
+    
+    bindEvents() {
+        this.prevBtn.addEventListener('click', () => this.prevSlide());
+        this.nextBtn.addEventListener('click', () => this.nextSlide());
+        
+        this.dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => this.goToSlide(index));
+        });
+        
+        // Touch support
+        this.addTouchSupport();
+        
+        // Pause autoplay on hover
+        this.carousel.addEventListener('mouseenter', () => this.pauseAutoplay());
+        this.carousel.addEventListener('mouseleave', () => this.startAutoplay());
+    }
+    
+    addTouchSupport() {
+        let startX = 0;
+        
+        this.container.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+        }, { passive: true });
+        
+        this.container.addEventListener('touchend', (e) => {
+            const endX = e.changedTouches[0].clientX;
+            const deltaX = startX - endX;
+            
+            if (Math.abs(deltaX) > 50) {
+                if (deltaX > 0) this.nextSlide();
+                else this.prevSlide();
+            }
+        }, { passive: true });
+    }
+    
+    goToSlide(index) {
+        if (this.isAnimating) return;
+        
+        this.isAnimating = true;
+        this.currentIndex = index;
+        
+        const translateX = -this.currentIndex * (100 / this.totalSlides);
+        this.container.style.transform = `translateX(${translateX}%)`;
+        
+        this.updateDots();
+        
+        setTimeout(() => {
+            this.isAnimating = false;
+            
+            // Reset to beginning when reaching cloned slides
+            if (this.currentIndex >= this.totalSlides) {
+                this.container.style.transition = 'none';
+                this.currentIndex = 0;
+                this.container.style.transform = `translateX(0%)`;
+                setTimeout(() => {
+                    this.container.style.transition = 'transform 0.6s ease';
+                }, 50);
+            }
+        }, 600);
+    }
+    
+    nextSlide() {
+        this.goToSlide(this.currentIndex + 1);
+    }
+    
+    prevSlide() {
+        const prevIndex = this.currentIndex - 1;
+        if (prevIndex < 0) {
+            // Jump to the last original slide (which is before clones)
+            this.container.style.transition = 'none';
+            this.currentIndex = this.totalSlides;
+            this.container.style.transform = `translateX(-${this.totalSlides * (100 / this.totalSlides)}%)`;
+            
+            setTimeout(() => {
+                this.container.style.transition = 'transform 0.6s ease';
+                this.goToSlide(this.totalSlides - 1);
+            }, 50);
+        } else {
+            this.goToSlide(prevIndex);
+        }
+    }
+    
+    updateDots() {
+        const realIndex = this.currentIndex % this.totalSlides;
+        this.dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === realIndex);
+        });
+    }
+    
+    startAutoplay() {
+        this.pauseAutoplay();
+        this.autoplayInterval = setInterval(() => {
+            this.nextSlide();
+        }, this.autoplayDelay);
+    }
+    
+    pauseAutoplay() {
+        if (this.autoplayInterval) {
+            clearInterval(this.autoplayInterval);
+            this.autoplayInterval = null;
+        }
+    }
+}
+
+// Initialize carousels
+let carousels = {};
+
+function initializeCarousels() {
+    // Use ContinuousCarousel for seamless infinite scrolling
+    carousels['training-ground'] = new ContinuousCarousel('training-ground');
+    carousels['vehicles'] = new ContinuousCarousel('vehicles');
+    carousels['facilities'] = new ContinuousCarousel('facilities');
+}
+
+// Gallery tabs functionality with carousel integration
 document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         // Remove active class from all buttons and sliders
@@ -27,7 +416,20 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
         
         // Show corresponding slider
         const targetTab = btn.getAttribute('data-tab');
-        document.getElementById(targetTab).classList.add('active');
+        const targetSlider = document.getElementById(targetTab);
+        targetSlider.classList.add('active');
+        
+        // Restart autoplay for the active carousel
+        if (carousels[targetTab]) {
+            carousels[targetTab].startAutoplay();
+        }
+        
+        // Pause autoplay for inactive carousels
+        Object.keys(carousels).forEach(key => {
+            if (key !== targetTab && carousels[key]) {
+                carousels[key].pauseAutoplay();
+            }
+        });
     });
 });
 
@@ -147,6 +549,10 @@ function initStatsAnimation() {
 // Initialize stats animation when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     initStatsAnimation();
+    // Initialize carousels after DOM is loaded
+    setTimeout(() => {
+        initializeCarousels();
+    }, 100);
 });
 
 // Intersection Observer for other animations
@@ -170,4 +576,13 @@ document.querySelectorAll('.feature-card, .branch-card').forEach(el => {
     el.style.transform = 'translateY(30px)';
     el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
     observer.observe(el);
+});
+
+// Cleanup on page unload
+window.addEventListener('beforeunload', () => {
+    Object.values(carousels).forEach(carousel => {
+        if (carousel && carousel.destroy) {
+            carousel.destroy();
+        }
+    });
 });
